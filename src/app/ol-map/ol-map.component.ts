@@ -15,7 +15,7 @@ import { Extent, getCenter } from 'ol/extent';
 import TileLayer from 'ol/layer/Tile';
 import OSM, { ATTRIBUTION } from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
-import { useGeographic } from 'ol/proj.js';
+import { toLonLat, useGeographic } from 'ol/proj.js';
 import proj4 = require('proj4');
 import { register } from 'ol/proj/proj4';
 import { get as GetProjection } from 'ol/proj';
@@ -23,6 +23,7 @@ import { ScaleLine, defaults as DefaultControls } from 'ol/control';
 import { Point } from 'ol/geom';
 import ImageLayer from 'ol/layer/Image';
 import Static from 'ol/source/ImageStatic';
+import { Pixel } from 'ol/pixel';
 
 useGeographic();
 
@@ -113,13 +114,14 @@ export class OlMapComponent implements AfterViewInit {
     });
   }
 
-  onClick(event: any) {
-    const feature = this.map.getFeaturesAtPixel(event.pixel)[0];
+  onClick($event: any) {
+    let pixel: Pixel = [$event.x, $event.y];
+    const feature = this.map.getFeaturesAtPixel(pixel)[0];
     if (!feature) {
       return;
     }
     console.log(feature);
-    const coordinate = feature.getProperties().getCoordinates();
-    console.log(coordinate, feature);
+    const coordinate = feature.getGeometry() as Point;
+    console.log(coordinate.getCoordinates(), feature.getGeometry());
   }
 }
