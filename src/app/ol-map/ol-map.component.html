@@ -2,6 +2,11 @@
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
 />
-<div class="map-container" id="map" (click)="onClick($event)">
+<div
+  class="map-container"
+  id="map"
+  (click)="onClick($event)"
+  (pointermove)="onPointerMove($event)"
+>
   <div id="popup"></div>
 </div>

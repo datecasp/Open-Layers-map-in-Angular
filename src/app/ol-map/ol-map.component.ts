@@ -16,7 +16,7 @@ import TileLayer from 'ol/layer/Tile';
 import OSM, { ATTRIBUTION } from 'ol/source/OSM';
 import VectorSource from 'ol/source/Vector';
 import { toLonLat, useGeographic } from 'ol/proj.js';
-import proj4 = require('proj4');
+//import proj4 = require('proj4');
 import { register } from 'ol/proj/proj4';
 import { get as GetProjection } from 'ol/proj';
 import { ScaleLine, defaults as DefaultControls } from 'ol/control';
@@ -66,11 +66,11 @@ export class OlMapComponent implements AfterViewInit {
   }
 
   private initMap(): void {
-    proj4.defs(
-      'EPSG:3857',
-      '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs'
-    );
-    register(proj4);
+    // proj4.defs(
+    //   'EPSG:3857',
+    //   '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs'
+    // );
+    // register(proj4);
     //this.projection = GetProjection('EPSG:3857');
     //this.projection.setExtent(this.extent);
     this.view = new View({
@@ -123,5 +123,11 @@ export class OlMapComponent implements AfterViewInit {
     console.log(feature);
     const coordinate = feature.getGeometry() as Point;
     console.log(coordinate.getCoordinates(), feature.getGeometry());
+  }
+
+  onPointerMove($event: any) {
+    let pixel: Coordinate = [$event.x, $event.y];
+    const type = this.map.hasFeatureAtPixel(pixel) ? 'pointer' : 'inherit';
+    this.map.getViewport().style.cursor = type;
   }
 }
