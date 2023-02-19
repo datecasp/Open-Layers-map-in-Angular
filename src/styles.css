@@ -1,1 +1,4 @@
 /* Add application styles & imports to this file! */
+@use '@material/fab';
+
+@include fab.core-styles;

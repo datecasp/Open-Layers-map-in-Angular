@@ -27,8 +27,8 @@ export class AppComponent implements AfterViewInit {
   //readonly wmPoint = new Point(fromLonLat(this.point));
   readonly points: Coordinate[] = [this.point, this.point2];
 
-  imgMenuIcon: string = "./assets/rubik.png";
-  imgMenuIconHover: string = "./assets/rubik-hover.png";
+  imgMenuIcon: string = './assets/rubik.png';
+  imgMenuIconHover: string = './assets/rubik-hover.png';
   imgSrc: string = this.imgMenuIcon;
 
   ngAfterViewInit() {}

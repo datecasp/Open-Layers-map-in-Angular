@@ -20,10 +20,11 @@ import { toLonLat, useGeographic } from 'ol/proj.js';
 import { register } from 'ol/proj/proj4';
 import { get as GetProjection } from 'ol/proj';
 import { ScaleLine, defaults as DefaultControls } from 'ol/control';
-import { Point } from 'ol/geom';
+import { Point, Polygon } from 'ol/geom';
 import ImageLayer from 'ol/layer/Image';
 import Static from 'ol/source/ImageStatic';
 import { Pixel } from 'ol/pixel';
+import { EduGamingControl } from '../controls/edu-gaming-control';
 
 useGeographic();
 
@@ -37,7 +38,8 @@ export class OlMapComponent implements AfterViewInit {
   @Input() zoom: number; // initial zoom
   @Input() points: Coordinate[]; // Point
   mapPoint: Point;
-  mapPoint2: Point;
+  mapCoord: Coordinate;
+  feat: Feature;
   view: View;
   //projection: Projection | any;
   //extent: Extent = [-20026376.39, -20048966.1, 20026376.39, 20048966.1];
@@ -57,8 +59,17 @@ export class OlMapComponent implements AfterViewInit {
   constructor(private zone: NgZone, private cd: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
+    this.mapCoord = this.points[1];
     this.mapPoint = new Point(this.points[0]);
-    this.mapPoint2 = new Point(this.points[1]);
+
+    this.feat = new Feature({
+      point: new Point(this.mapCoord),
+      name: 'My Polygon',
+      id: 1,
+    });
+
+    this.feat.setId('1');
+
     if (!this.map) {
       this.zone.runOutsideAngular(() => this.initMap());
     }
@@ -79,14 +90,14 @@ export class OlMapComponent implements AfterViewInit {
       zoom: this.zoom,
       projection: this.projection,
     });
+
     this.map = new Map({
       target: 'map',
       view: this.view,
-      controls: DefaultControls().extend([new ScaleLine({})]),
+      controls: DefaultControls().extend([new EduGamingControl({})]),
       layers: [
         new ImageLayer({
           source: new Static({
-            attributions: '© <a href="https://xkcd.com/license.html">xkcd</a>',
             url: 'https://imgs.xkcd.com/comics/online_communities.png',
             projection: this.projection,
             imageExtent: this.extent,
@@ -94,7 +105,7 @@ export class OlMapComponent implements AfterViewInit {
         }),
         new VectorLayer({
           source: new VectorSource({
-            features: [new Feature(this.mapPoint)],
+            features: [this.feat],
           }),
           style: {
             'circle-radius': 9,
@@ -103,7 +114,7 @@ export class OlMapComponent implements AfterViewInit {
         }),
         new VectorLayer({
           source: new VectorSource({
-            features: [new Feature(this.mapPoint2)],
+            features: [new Feature(this.mapPoint)],
           }),
           style: {
             'circle-radius': 9,
@@ -116,13 +127,13 @@ export class OlMapComponent implements AfterViewInit {
 
   onClick($event: any) {
     let pixel: Pixel = [$event.x, $event.y];
-    const feature = this.map.getFeaturesAtPixel(pixel)[0];
+    const feature = this.map.getFeaturesAtPixel(pixel)[0] as Feature;
     if (!feature) {
       return;
     }
-    console.log(feature);
+    console.log(feature.getId());
     const coordinate = feature.getGeometry() as Point;
-    console.log(coordinate.getCoordinates(), feature.getGeometry());
+    console.log(coordinate.getCoordinates(), feature);
   }
 
   onPointerMove($event: any) {
